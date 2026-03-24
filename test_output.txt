@@ -1,0 +1,28 @@
+00:00 +0: loading C:/Users/42195/Documents/Aura-Edge/test/widget_test.dart
+00:00 +0: AuraEdge settings smoke test
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following FirebaseException was thrown running a test:
+[core/no-app] No Firebase App '[DEFAULT]' has been created - call Firebase.initializeApp()
+
+When the exception was thrown, this was the stack:
+#0      MethodChannelFirebase.app (package:firebase_core_platform_interface/src/method_channel/method_channel_firebase.dart:190:5)
+#1      Firebase.app (package:firebase_core/src/firebase.dart:79:41)
+#2      FirebaseFirestore.instance (package:cloud_firestore/src/firestore.dart:33:21)
+#3      new LightingRepository (package:auraedge/features/lighting/data/lighting_repository.dart:6:58)
+#4      new MockLightingRepository (file:///C:/Users/42195/Documents/Aura-Edge/test/widget_test.dart)
+#5      main.<anonymous closure> (file:///C:/Users/42195/Documents/Aura-Edge/test/widget_test.dart:28:54)
+#6      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+<asynchronous suspension>
+#7      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1682:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  AuraEdge settings smoke test
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:00 +0 -1: AuraEdge settings smoke test [E]
+  Test failed. See exception logs above.
+  The test description was: AuraEdge settings smoke test
+  
+00:00 +0 -1: Some tests failed.

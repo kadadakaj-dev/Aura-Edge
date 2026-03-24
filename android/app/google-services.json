@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "279591764607",
+    "project_id": "auraedge2026",
+    "storage_bucket": "auraedge2026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279591764607:android:78387d1cb37e6b84c9b54a",
+        "android_client_info": {
+          "package_name": "com.auraedge.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqHFOtKISx9E1B4ZFvVinoLEEMeRzfiWc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

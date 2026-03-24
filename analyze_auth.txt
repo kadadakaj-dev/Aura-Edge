@@ -1,0 +1,7 @@
+Analyzing Aura-Edge...                                          
+
+  error - The class 'GoogleSignIn' doesn't have an unnamed constructor - lib\features\auth\data\auth_repository.dart:14:38 - new_with_undefined_constructor_default
+  error - The method 'signIn' isn't defined for the type 'GoogleSignIn' - lib\features\auth\data\auth_repository.dart:20:67 - undefined_method
+   info - Uses 'await' on an instance of 'GoogleSignInAuthentication', which is not a subtype of 'Future' - lib\features\auth\data\auth_repository.dart:23:53 - await_only_futures
+  error - The getter 'accessToken' isn't defined for the type 'GoogleSignInAuthentication' - lib\features\auth\data\auth_repository.dart:26:33 - undefined_getter
+
