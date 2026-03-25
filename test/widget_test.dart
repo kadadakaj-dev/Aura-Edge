@@ -1,38 +1,46 @@
-// This is a basic Flutter widget test.
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:auraedge/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auraedge/features/lighting/presentation/aura_studio_screen.dart';
 import 'package:auraedge/features/lighting/presentation/lighting_controller.dart';
 import 'package:auraedge/features/lighting/data/lighting_repository.dart';
 import 'package:auraedge/features/lighting/domain/lighting_settings.dart';
+import 'package:auraedge/core/system_monitor.dart';
+import 'package:auraedge/features/auth/data/auth_repository.dart';
 
 class MockLightingRepository implements LightingRepository {
+  LightingSettings settings = const LightingSettings();
   @override
-  Future<void> saveSettings(LightingSettings settings) async {}
+  Future<void> saveSettings(LightingSettings s) async { settings = s; }
+  @override
+  Future<LightingSettings> getSettings() async => settings;
   @override
   Stream<LightingSettings?> watchSettings() => Stream.value(null);
 }
 
+class MockSystemMonitor implements SystemMonitor {
+  @override
+  void dispose() {}
+}
+
 void main() {
   testWidgets('AuraEdge settings smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+    // Override dependencies to avoid native calls and complex auth
     await tester.pumpWidget(ProviderScope(
       overrides: [
         lightingRepositoryProvider.overrideWithValue(MockLightingRepository()),
+        systemMonitorProvider.overrideWithValue(MockSystemMonitor()),
+        authStateProvider.overrideWith((ref) => Stream.value(null)),
       ],
-      child: const AuraEdgeApp(),
+      child: const MaterialApp(
+        home: AuraStudioScreen(),
+      ),
     ));
-    await tester.pump(); // Trigger a frame, but don't wait for the infinite ticker to settle
 
-    // Verify that our main title is present.
-    expect(find.text('AuraEdge'), findsOneWidget);
-    expect(find.text('Povoliť okrajové svetlo'), findsOneWidget);
+    // Pump once to allow the AuraBackground shader program to "load" (mocked/empty in tests usually)
+    await tester.pump();
+    
+    // Check for a core piece of UI that should be present in AuraStudioScreen
+    expect(find.text('Dashboard'), findsOneWidget);
   });
 }

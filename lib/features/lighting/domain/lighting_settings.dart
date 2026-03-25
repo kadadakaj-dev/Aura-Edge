@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 enum CutoutType { defaultType, notch, hole, infinity }
+enum PhysicsMode { loop, pingPong, turboAcceleration }
 
 class LightingSettings {
   final bool isEnabled;
@@ -13,6 +14,11 @@ class LightingSettings {
   final bool isSnakeMode;
   final double snakeLength;
   final String activeShader;
+  final PhysicsMode physicsMode;
+  final double accelerationFactor;
+  final bool isNotificationPulseEnabled;
+  final bool isAodEnabled;
+  final bool isMeshBackgroundEnabled;
 
   const LightingSettings({
     this.isEnabled = true,
@@ -25,6 +31,11 @@ class LightingSettings {
     this.isSnakeMode = false,
     this.snakeLength = 0.2,
     this.activeShader = 'assets/shaders/edge_glow.frag',
+    this.physicsMode = PhysicsMode.loop,
+    this.accelerationFactor = 1.1,
+    this.isNotificationPulseEnabled = true,
+    this.isAodEnabled = false,
+    this.isMeshBackgroundEnabled = true,
   });
 
   LightingSettings copyWith({
@@ -38,6 +49,11 @@ class LightingSettings {
     bool? isSnakeMode,
     double? snakeLength,
     String? activeShader,
+    PhysicsMode? physicsMode,
+    double? accelerationFactor,
+    bool? isNotificationPulseEnabled,
+    bool? isAodEnabled,
+    bool? isMeshBackgroundEnabled,
   }) {
     return LightingSettings(
       isEnabled: isEnabled ?? this.isEnabled,
@@ -50,6 +66,11 @@ class LightingSettings {
       isSnakeMode: isSnakeMode ?? this.isSnakeMode,
       snakeLength: snakeLength ?? this.snakeLength,
       activeShader: activeShader ?? this.activeShader,
+      physicsMode: physicsMode ?? this.physicsMode,
+      accelerationFactor: accelerationFactor ?? this.accelerationFactor,
+      isNotificationPulseEnabled: isNotificationPulseEnabled ?? this.isNotificationPulseEnabled,
+      isAodEnabled: isAodEnabled ?? this.isAodEnabled,
+      isMeshBackgroundEnabled: isMeshBackgroundEnabled ?? this.isMeshBackgroundEnabled,
     );
   }
 
@@ -65,6 +86,11 @@ class LightingSettings {
       'isSnakeMode': isSnakeMode,
       'snakeLength': snakeLength,
       'activeShader': activeShader,
+      'physicsMode': physicsMode.name,
+      'accelerationFactor': accelerationFactor,
+      'isNotificationPulseEnabled': isNotificationPulseEnabled,
+      'isAodEnabled': isAodEnabled,
+      'isMeshBackgroundEnabled': isMeshBackgroundEnabled,
     };
   }
 
@@ -83,6 +109,14 @@ class LightingSettings {
       isSnakeMode: map['isSnakeMode'] ?? false,
       snakeLength: (map['snakeLength'] ?? 0.2).toDouble(),
       activeShader: map['activeShader'] ?? 'assets/shaders/edge_glow.frag',
+      physicsMode: PhysicsMode.values.firstWhere(
+        (e) => e.name == map['physicsMode'],
+        orElse: () => PhysicsMode.loop,
+      ),
+      accelerationFactor: (map['accelerationFactor'] ?? 1.1).toDouble(),
+      isNotificationPulseEnabled: map['isNotificationPulseEnabled'] ?? true,
+      isAodEnabled: map['isAodEnabled'] ?? false,
+      isMeshBackgroundEnabled: map['isMeshBackgroundEnabled'] ?? true,
     );
   }
 }

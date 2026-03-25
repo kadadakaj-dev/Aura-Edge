@@ -9,6 +9,8 @@ uniform vec4 u_color2;
 uniform float u_cutout_type; // 0=Default, 1=Notch, 2=Hole, 3=Infinity
 uniform float u_is_snake_mode;
 uniform float u_snake_length;
+uniform float u_physics_mode;       // 0=Loop, 1=Ping-Pong, 2=Turbo
+uniform float u_acceleration_factor; // For Turbo acceleration
 
 out vec4 fragColor;
 
@@ -57,19 +59,39 @@ void main() {
     if (u_is_snake_mode > 0.5) {
         float angle = atan(p.y, p.x);
         float normalizedAngle = (angle / 3.14159265359) * 0.5 + 0.5;
-        float snakePos = fract(u_time * 0.2);
+        
+        float snakePos;
+        float impact = 0.0;
+        if (u_physics_mode < 0.5) {
+            // Mode 0: Loop
+            snakePos = fract(u_time * 0.2);
+        } else if (u_physics_mode < 1.5) {
+            // Mode 1: Ping-Pong
+            float s = sin(u_time * 0.5);
+            snakePos = abs(s);
+            // Impact pulse when s is near 1.0, -1.0 or 0.0 (the turnarounds)
+            impact = pow(abs(s), 20.0) + pow(1.0 - abs(s), 20.0);
+        } else {
+            // Mode 2: Turbo Acceleration
+            float cycleTime = mod(u_time, 5.0);
+            float speed = 0.2 * pow(u_acceleration_factor, cycleTime);
+            snakePos = fract(speed * cycleTime);
+        }
+        
         float distToSnake = fract(normalizedAngle - snakePos);
         
         if (distToSnake > u_snake_length) {
-            borderMask = 0.0;
+            // Trail / Motion Blur effect: exponential decay outside the head
+            float trail = exp(-15.0 * (distToSnake - u_snake_length));
+            borderMask *= trail * 0.6;
         } else if (distToSnake < 0.05) {
-            // Pulse the head of the snake
-            float pulse = (sin(u_time * 8.0) * 0.5 + 0.5) * 0.5 + 0.5; // 0.5 to 1.0
+            // Head pulse
+            float pulse = (sin(u_time * 8.0) * 0.5 + 0.5) * 0.5 + 0.5;
             borderMask *= pulse * 1.5;
-        } else {
-            // Add a smooth tail fade for "Glow" effect
-            borderMask *= smoothstep(0.0, 0.08, distToSnake);
         }
+        
+        // Add impact flash to the whole border
+        borderMask += impact * 0.3 * (1.0 - dInner); 
     }
     
     if (borderMask <= 0.0) {

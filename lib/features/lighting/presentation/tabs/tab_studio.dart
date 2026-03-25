@@ -85,9 +85,53 @@ class TabStudio extends ConsumerWidget {
 
           SliverToBoxAdapter(
             child: _buildSectionWrap(
-              title: 'Cutout Type',
+              title: 'Typ výrezu',
               icon: LucideIcons.scissors,
               child: _buildCutoutSelector(settings, controller),
+            ),
+          ),
+
+          if (settings.isSnakeMode)
+            SliverToBoxAdapter(
+              child: _buildSectionWrap(
+                title: 'Fyzika pohybu',
+                icon: LucideIcons.gauge,
+                child: Column(
+                  children: [
+                    _buildPhysicsSelector(settings, controller),
+                    if (settings.physicsMode == PhysicsMode.turboAcceleration) ...[
+                      const SizedBox(height: 20),
+                      _buildSlider(
+                        label: 'Zrýchlenie',
+                        value: settings.accelerationFactor,
+                        min: 1.01,
+                        max: 2.0,
+                        onChanged: controller.updateAccelerationFactor,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+
+          SliverToBoxAdapter(
+            child: _buildSectionWrap(
+              title: 'Simulácia AOD',
+              icon: LucideIcons.moon,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Vždy zapnutý displej',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  Switch(
+                    value: settings.isAodEnabled,
+                    onChanged: controller.toggleAod,
+                    activeThumbColor: Colors.greenAccent,
+                  ),
+                ],
+              ),
             ),
           ),
 
@@ -229,6 +273,35 @@ class TabStudio extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPhysicsSelector(
+    LightingSettings settings,
+    LightingController controller,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildShaderPill(
+          label: 'Slučka',
+          icon: LucideIcons.repeat,
+          isSelected: settings.physicsMode == PhysicsMode.loop,
+          onTap: () => controller.updatePhysicsMode(PhysicsMode.loop),
+        ),
+        _buildShaderPill(
+          label: 'Ping-Pong',
+          icon: LucideIcons.mousePointer2,
+          isSelected: settings.physicsMode == PhysicsMode.pingPong,
+          onTap: () => controller.updatePhysicsMode(PhysicsMode.pingPong),
+        ),
+        _buildShaderPill(
+          label: 'Turbo',
+          icon: LucideIcons.zap,
+          isSelected: settings.physicsMode == PhysicsMode.turboAcceleration,
+          onTap: () => controller.updatePhysicsMode(PhysicsMode.turboAcceleration),
+        ),
+      ],
     );
   }
 

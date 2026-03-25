@@ -12,27 +12,19 @@ class SnakeTaskHandler extends TaskHandler {
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
-    // Start a periodic 60-second timer
-    _timer = Timer.periodic(const Duration(seconds: 60), (timer) async {
-      final bool isActive = await FlutterOverlayWindow.isActive();
-      if (!isActive) {
-        await FlutterOverlayWindow.showOverlay(
-          height: WindowSize.matchParent,
-          width: WindowSize.matchParent,
-          alignment: OverlayAlignment.center,
-          visibility: NotificationVisibility.visibilityPublic,
-          flag: OverlayFlag.defaultFlag,
-          overlayTitle: "AuraEdge Snake",
-          overlayContent: "Neon Snake animation active",
-          enableDrag: false,
-        );
-
-        // Close after 5 seconds
-        Future.delayed(const Duration(seconds: 5), () {
-          FlutterOverlayWindow.closeOverlay();
-        });
-      }
-    });
+    final bool isActive = await FlutterOverlayWindow.isActive();
+    if (!isActive) {
+      await FlutterOverlayWindow.showOverlay(
+        height: WindowSize.matchParent,
+        width: WindowSize.matchParent,
+        alignment: OverlayAlignment.center,
+        visibility: NotificationVisibility.visibilityPublic,
+        flag: OverlayFlag.defaultFlag,
+        overlayTitle: "AuraEdge Snake",
+        overlayContent: "Neon Snake animation active",
+        enableDrag: false,
+      );
+    }
   }
 
   @override

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:proximity_sensor/proximity_sensor.dart';
+import 'package:flutter/foundation.dart';
 import '../features/lighting/presentation/lighting_controller.dart';
 
 final systemMonitorProvider = Provider<SystemMonitor>((ref) {
@@ -13,9 +15,12 @@ class SystemMonitor {
   final Ref _ref;
   final Battery _battery = Battery();
   StreamSubscription<BatteryState>? _batterySubscription;
+  StreamSubscription<int>? _proximitySubscription;
+  bool _isNear = false;
 
   SystemMonitor(this._ref) {
     _initBatteryListener();
+    _initProximityListener();
   }
 
   void _initBatteryListener() {
@@ -37,7 +42,29 @@ class SystemMonitor {
     });
   }
 
+  void _initProximityListener() {
+    _proximitySubscription = ProximitySensor.events.listen((int event) {
+      // 1 = Far, 0 = Near
+      _isNear = event == 0;
+      final settings = _ref.read(lightingSettingsProvider);
+      final controller = _ref.read(lightingSettingsProvider.notifier);
+
+      if (_isNear && settings.isAodEnabled) {
+         debugPrint('POCKET MODE: Near detected, pausing AOD lighting.');
+         if (settings.isEnabled) {
+           controller.toggleEnabled(false);
+         }
+      } else if (!_isNear && settings.isAodEnabled) {
+         debugPrint('POCKET MODE: Far detected, resuming AOD lighting.');
+         if (!settings.isEnabled) {
+           controller.toggleEnabled(true);
+         }
+      }
+    });
+  }
+
   void dispose() {
     _batterySubscription?.cancel();
+    _proximitySubscription?.cancel();
   }
 }

@@ -45,6 +45,7 @@ dependencies:
   flutter_foreground_task: ^9.2.1
   battery_plus: ^7.0.0
   lucide_icons: ^0.257.0
+  proximity_sensor: ^1.3.10
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,7 @@ flutter:
   shaders:
     - assets/shaders/edge_glow.frag
     - assets/shaders/fluid_glow.frag
+    - assets/shaders/mesh_gradient.frag
 
   # To add assets to your application, add an assets section, like this:
   # assets:

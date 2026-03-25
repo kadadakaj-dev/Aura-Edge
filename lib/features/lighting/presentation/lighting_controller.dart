@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/lighting_settings.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -7,7 +9,7 @@ import '../data/lighting_repository.dart';
 import '../../../core/system_monitor.dart';
 
 final lightingRepositoryProvider = Provider<LightingRepository>((ref) {
-  return LightingRepository();
+  return FirebaseLightingRepository();
 });
 
 final lightingSettingsProvider = NotifierProvider<LightingController, LightingSettings>(() {
@@ -15,10 +17,14 @@ final lightingSettingsProvider = NotifierProvider<LightingController, LightingSe
 });
 
 class LightingController extends Notifier<LightingSettings> {
+  static const _notificationsChannel = MethodChannel('com.auraedge.app/notifications');
   Timer? _debounceTimer;
 
   @override
   LightingSettings build() {
+    _init();
+    _setupNotificationListener();
+    
     final repo = ref.read(lightingRepositoryProvider);
     // Listen to remote changes to sync across devices (local takes precedence during active edits)
     repo.watchSettings().listen((settings) {
@@ -119,6 +125,79 @@ class LightingController extends Notifier<LightingSettings> {
   void updateSnakeLength(double value) {
     state = state.copyWith(snakeLength: value);
     _saveDebounced();
+  }
+
+  void updatePhysicsMode(PhysicsMode mode) {
+    state = state.copyWith(physicsMode: mode);
+    _saveDebounced();
+  }
+
+  void updateAccelerationFactor(double value) {
+    state = state.copyWith(accelerationFactor: value);
+    _saveDebounced();
+  }
+
+  void _init() async {
+    final repo = ref.read(lightingRepositoryProvider);
+    final settings = await repo.getSettings();
+    state = settings;
+    _updateAutomationState(settings);
+  }
+
+  void toggleAod(bool value) {
+    state = state.copyWith(isAodEnabled: value);
+    _saveDebounced();
+  }
+
+  void _setupNotificationListener() {
+    _notificationsChannel.setMethodCallHandler((call) async {
+       if (call.method == 'onNotification' && state.isNotificationPulseEnabled) {
+         _triggerPulse();
+       }
+    });
+  }
+
+  void _triggerPulse() async {
+    // Save original state
+    final originalSettings = state;
+    
+    // Intense Pulse: Max thickness, fast speed, bright colors (temporarily)
+    state = state.copyWith(
+      borderThickness: 40.0,
+      animationSpeed: 5.0,
+    );
+    
+    await Future.delayed(const Duration(seconds: 2));
+    
+    // Revert to original thickness and speed
+    state = state.copyWith(
+      borderThickness: originalSettings.borderThickness,
+      animationSpeed: originalSettings.animationSpeed,
+    );
+  }
+
+  void toggleNotificationPulse(bool enabled) {
+    state = state.copyWith(isNotificationPulseEnabled: enabled);
+    _saveDebounced();
+  }
+
+  void toggleMeshBackground(bool enabled) {
+    state = state.copyWith(isMeshBackgroundEnabled: enabled);
+    _saveDebounced();
+  }
+
+  Future<void> requestNotificationAccess() async {
+    const channel = MethodChannel('com.auraedge.app/screen_state');
+    await channel.invokeMethod('requestNotificationAccess');
+  }
+
+  Future<void> requestIgnoreBatteryOptimizations() async {
+    const channel = MethodChannel('com.auraedge.app/screen_state');
+    try {
+      await channel.invokeMethod('requestIgnoreBatteryOptimizations');
+    } catch (e) {
+      debugPrint('Error requesting battery optimization: $e');
+    }
   }
 
   void _saveDebounced() {

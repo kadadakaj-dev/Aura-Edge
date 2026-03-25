@@ -126,6 +126,8 @@ class EdgeLightingPainter extends CustomPainter {
     // snake_mode and snake_length
     shader.setFloat(14, settings.isSnakeMode ? 1.0 : 0.0);
     shader.setFloat(15, settings.snakeLength);
+    shader.setFloat(16, settings.physicsMode.index.toDouble());
+    shader.setFloat(17, settings.accelerationFactor);
 
     final paint = Paint()..shader = shader;
     canvas.drawRect(Offset.zero & size, paint);
