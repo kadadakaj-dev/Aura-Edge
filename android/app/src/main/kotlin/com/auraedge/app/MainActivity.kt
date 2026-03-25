@@ -15,7 +15,6 @@ import android.telephony.TelephonyManager
 import android.net.Uri
 import android.provider.Settings
 import android.os.PowerManager
-import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.auraedge.app/screen_state"
