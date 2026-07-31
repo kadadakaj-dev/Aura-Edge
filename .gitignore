@@ -45,3 +45,9 @@ app.*.map.json
 /android/app/release
 .vercel
 .env*.local
+.env.production
+.env*
+
+# Firebase
+firebase.json
+google-services.json
