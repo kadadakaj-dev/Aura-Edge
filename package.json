@@ -1,0 +1,25 @@
+{
+  "name": "auraedge",
+  "version": "1.0.0",
+  "description": "AuraEdge Flutter application",
+  "scripts": {
+    "typecheck": "flutter analyze",
+    "test": "flutter test",
+    "verify": "./verify_build.sh",
+    "start": "flutter run",
+    "build": "flutter build apk --release"
+  },
+  "dependencies": {
+    "flutter": {
+      "sdk": "flutter"
+    },
+    "firebase_auth": "^4.11.0",
+    "google_sign_in": "^6.1.5",
+    "flutter_lints": "^2.0.0"
+  },
+  "devDependencies": {
+    "flutter_test": {
+      "sdk": "flutter"
+    }
+  }
+}
